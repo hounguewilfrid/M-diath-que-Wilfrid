@@ -102,19 +102,31 @@ function renderGallery() {
 
             card.className = "photo-card";
 
-            card.innerHTML = `
-                <img src="${photo.image}" alt="${photo.name}">
-                <div class="photo-info">
-                    <strong>${photo.name}</strong>
-                    <span>${photo.date}</span>
+          card.innerHTML = `
+    <img 
+        src="${photo.image}" 
+        alt="${photo.name}"
+        onclick="openPhoto('${photo.image}')"
+    >
 
-                    <button
-                        class="delete-button"
-                        onclick="deletePhoto(${photo.id})">
-                        Supprimer
-                    </button>
-                </div>
-            `;
+    <div class="photo-info">
+        <strong>${photo.name}</strong>
+        <span>${photo.date}</span>
+
+        <a 
+            href="${photo.image}" 
+            download="${photo.name}"
+            class="download-button">
+            ⬇ Télécharger
+        </a>
+
+        <button
+            class="delete-button"
+            onclick="deletePhoto(${photo.id})">
+            Supprimer
+        </button>
+    </div>
+`;
 
             gallery.appendChild(card);
         });

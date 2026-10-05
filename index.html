@@ -1,488 +1,423 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Médiathèque Wilfrid HOUNGUE</title>
 
+    <meta name="description"
+          content="Médiathèque personnelle de Wilfrid HOUNGUE - Recherche, terrain, thèse et photos personnelles.">
+
     <link rel="stylesheet" href="style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-    <!-- ================= HEADER ================= -->
+<header class="site-header">
 
-    <header class="header">
+    <div class="header-content">
 
-        <div class="container header-content">
+        <div class="brand">
+            <div class="brand-icon">📷</div>
 
-            <div class="logo">
-                <div class="logo-letter">W</div>
-
-                <div>
-                    <div class="logo-title">Médiathèque</div>
-                    <div class="logo-name">Wilfrid HOUNGUE</div>
-                </div>
+            <div>
+                <h1>Médiathèque Wilfrid HOUNGUE</h1>
+                <p>Recherche • Terrain • Thèse • Souvenirs</p>
             </div>
+        </div>
 
-            <nav class="navigation">
+        <button id="adminButton" class="admin-button">
+            🔐 Administration
+        </button>
 
-                <a href="#accueil">Accueil</a>
+    </div>
 
-                <a href="#galerie">Galerie</a>
+</header>
 
-                <a href="#albums">Albums</a>
 
-                <a href="#ajouter">Ajouter</a>
+<main class="container">
 
-                <button id="adminButton" class="admin-button">
-                    🔐 Administration
-                </button>
+    <!-- Présentation -->
 
-            </nav>
+    <section class="hero">
+
+        <div>
+
+            <span class="badge">
+                MÉDIATHÈQUE PERSONNELLE
+            </span>
+
+            <h2>
+                Mes photos, mes travaux,<br>
+                mes recherches.
+            </h2>
+
+            <p>
+                Un espace pour conserver, organiser et partager
+                mes photographies liées à la recherche, au terrain,
+                à la thèse et à mes activités personnelles.
+            </p>
 
         </div>
 
-    </header>
+    </section>
 
 
-    <!-- ================= ACCUEIL ================= -->
+    <!-- Albums -->
 
-    <main>
+    <section class="section">
 
-        <section id="accueil" class="hero">
-
-            <div class="container hero-content">
-
-                <div class="hero-text">
-
-                    <span class="badge">
-                        MÉDIATHÈQUE PERSONNELLE
-                    </span>
-
-                    <h1>
-                        Mes souvenirs,<br>
-                        mes travaux,<br>
-                        mon histoire.
-                    </h1>
-
-                    <p>
-                        Une collection personnelle de photographies,
-                        de travaux de recherche et de moments importants.
-                    </p>
-
-                    <div class="hero-buttons">
-
-                        <a href="#galerie" class="button primary-button">
-                            Voir la galerie
-                        </a>
-
-                        <a href="#ajouter" class="button secondary-button">
-                            Ajouter des photos
-                        </a>
-
-                    </div>
-
-                </div>
-
-
-                <div class="hero-visual">
-
-                    <div class="visual-card card-one">
-                        📷
-                    </div>
-
-                    <div class="visual-card card-two">
-                        🐄
-                    </div>
-
-                    <div class="visual-card card-three">
-                        🌾
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= STATISTIQUES ================= -->
-
-        <section class="stats-section">
-
-            <div class="container stats">
-
-                <div class="stat">
-                    <strong id="photoCount">0</strong>
-                    <span>Photos</span>
-                </div>
-
-                <div class="stat">
-                    <strong>4</strong>
-                    <span>Albums</span>
-                </div>
-
-                <div class="stat">
-                    <strong>2026</strong>
-                    <span>Depuis</span>
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= ALBUMS ================= -->
-
-        <section id="albums" class="section">
-
-            <div class="container">
-
-                <div class="section-header">
-
-                    <div>
-                        <span class="section-label">
-                            ORGANISATION
-                        </span>
-
-                        <h2>Mes albums</h2>
-                    </div>
-
-                    <button
-                        id="showAllButton"
-                        class="view-all-button">
-                        Toutes les photos
-                    </button>
-
-                </div>
-
-
-                <div class="albums-grid">
-
-                    <button
-                        class="album-card"
-                        data-album="Travaux de recherche">
-
-                        <div class="album-icon">
-                            🔬
-                        </div>
-
-                        <div>
-                            <h3>Travaux de recherche</h3>
-                            <span class="album-count" data-count-album="Travaux de recherche">
-                                0 photo
-                            </span>
-                        </div>
-
-                    </button>
-
-
-                    <button
-                        class="album-card"
-                        data-album="Terrain">
-
-                        <div class="album-icon">
-                            🌾
-                        </div>
-
-                        <div>
-                            <h3>Terrain</h3>
-                            <span class="album-count" data-count-album="Terrain">
-                                0 photo
-                            </span>
-                        </div>
-
-                    </button>
-
-
-                    <button
-                        class="album-card"
-                        data-album="Thèse">
-
-                        <div class="album-icon">
-                            📚
-                        </div>
-
-                        <div>
-                            <h3>Thèse</h3>
-                            <span class="album-count" data-count-album="Thèse">
-                                0 photo
-                            </span>
-                        </div>
-
-                    </button>
-
-
-                    <button
-                        class="album-card"
-                        data-album="Photos personnelles">
-
-                        <div class="album-icon">
-                            👤
-                        </div>
-
-                        <div>
-                            <h3>Photos personnelles</h3>
-                            <span class="album-count" data-count-album="Photos personnelles">
-                                0 photo
-                            </span>
-                        </div>
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= GALERIE ================= -->
-
-        <section id="galerie" class="section gallery-section">
-
-            <div class="container">
-
-                <div class="section-header gallery-header">
-
-                    <div>
-
-                        <span class="section-label">
-                            GALERIE
-                        </span>
-
-                        <h2 id="galleryTitle">
-                            Toutes les photos
-                        </h2>
-
-                    </div>
-
-
-                    <div class="search-box">
-
-                        <span>🔎</span>
-
-                        <input
-                            type="text"
-                            id="searchInput"
-                            placeholder="Rechercher une photo..."
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <div id="gallery" class="gallery-grid"></div>
-
-
-                <div id="emptyGallery" class="empty-gallery">
-
-                    <div class="empty-icon">
-                        📷
-                    </div>
-
-                    <h3>Aucune photo</h3>
-
-                    <p>
-                        Cet album ne contient pas encore de photo.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- ================= AJOUTER ================= -->
-
-        <section id="ajouter" class="section upload-section">
-
-            <div class="container">
-
-                <div class="upload-card">
-
-                    <div class="upload-icon">
-                        ⬆️
-                    </div>
-
-                    <h2>Ajouter des photos</h2>
-
-                    <p>
-                        Sélectionnez les photos à ajouter à votre médiathèque.
-                    </p>
-
-
-                    <!-- CHOIX DE L'ALBUM -->
-
-                    <div class="album-selector">
-
-                        <label for="albumSelect">
-                            Choisir l'album
-                        </label>
-
-                        <select id="albumSelect">
-
-                            <option value="Travaux de recherche">
-                                Travaux de recherche
-                            </option>
-
-                            <option value="Terrain">
-                                Terrain
-                            </option>
-
-                            <option value="Thèse">
-                                Thèse
-                            </option>
-
-                            <option value="Photos personnelles">
-                                Photos personnelles
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div id="uploadBox" class="upload-box">
-
-                        <div class="upload-box-icon">
-                            📸
-                        </div>
-
-                        <h3>
-                            Déposez vos photos ici
-                        </h3>
-
-                        <p>
-                            ou cliquez pour sélectionner vos fichiers
-                        </p>
-
-                        <button
-                            type="button"
-                            class="button primary-button"
-                            id="choosePhotoButton">
-
-                            Choisir des photos
-
-                        </button>
-
-                        <input
-                            type="file"
-                            id="photoInput"
-                            accept="image/*"
-                            multiple
-                            hidden
-                        >
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- ================= FOOTER ================= -->
-
-    <footer class="footer">
-
-        <div class="container footer-content">
+        <div class="section-title">
 
             <div>
-                <strong>
-                    Médiathèque Wilfrid HOUNGUE
-                </strong>
+                <h2>Albums</h2>
+                <p>Explorez les différentes catégories.</p>
+            </div>
+
+        </div>
+
+
+        <div class="albums-grid">
+
+            <button class="album-card"
+                    data-album="Travaux de recherche">
+
+                <div class="album-icon">🔬</div>
+
+                <h3>Travaux de recherche</h3>
+
+                <span id="count-recherche">0 photo</span>
+
+            </button>
+
+
+            <button class="album-card"
+                    data-album="Terrain">
+
+                <div class="album-icon">🌾</div>
+
+                <h3>Terrain</h3>
+
+                <span id="count-terrain">0 photo</span>
+
+            </button>
+
+
+            <button class="album-card"
+                    data-album="Thèse">
+
+                <div class="album-icon">🎓</div>
+
+                <h3>Thèse</h3>
+
+                <span id="count-these">0 photo</span>
+
+            </button>
+
+
+            <button class="album-card"
+                    data-album="Photos personnelles">
+
+                <div class="album-icon">❤️</div>
+
+                <h3>Photos personnelles</h3>
+
+                <span id="count-personnelles">0 photo</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- Upload -->
+
+    <section class="section upload-section">
+
+        <div class="section-title">
+
+            <div>
+                <h2>Ajouter des photos</h2>
 
                 <p>
-                    Photographies • Recherche • Élevage • Agriculture
+                    Sélectionnez un album puis choisissez vos images.
                 </p>
             </div>
 
+        </div>
+
+
+        <div class="upload-box">
+
+            <label for="albumSelect">
+                Album
+            </label>
+
+            <select id="albumSelect">
+
+                <option value="">
+                    -- Choisir un album --
+                </option>
+
+                <option value="Travaux de recherche">
+                    Travaux de recherche
+                </option>
+
+                <option value="Terrain">
+                    Terrain
+                </option>
+
+                <option value="Thèse">
+                    Thèse
+                </option>
+
+                <option value="Photos personnelles">
+                    Photos personnelles
+                </option>
+
+            </select>
+
+
+            <label for="photoInput" class="file-label">
+
+                <span class="upload-icon">📤</span>
+
+                <strong>
+                    Sélectionner des photos
+                </strong>
+
+                <small>
+                    JPG, PNG, WEBP ou GIF — maximum 10 MB par photo
+                </small>
+
+            </label>
+
+            <input
+                type="file"
+                id="photoInput"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+            >
+
+
+            <div id="selectedFiles" class="selected-files"></div>
+
+
+            <button
+                id="uploadButton"
+                class="primary-button"
+                disabled>
+
+                📤 Envoyer les photos
+
+            </button>
+
+
+            <div id="uploadStatus" class="status"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Galerie -->
+
+    <section class="section">
+
+        <div class="gallery-header">
+
             <div>
-                © 2026 Wilfrid HOUNGUE
+
+                <h2 id="galleryTitle">
+                    Toutes les photos
+                </h2>
+
+                <p id="gallerySubtitle">
+                    Photos disponibles dans la médiathèque.
+                </p>
+
+            </div>
+
+
+            <div class="gallery-actions">
+
+                <button
+                    id="allPhotosButton"
+                    class="secondary-button">
+
+                    Toutes les photos
+
+                </button>
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="🔎 Rechercher..."
+                    aria-label="Rechercher une photo"
+                >
+
             </div>
 
         </div>
 
-    </footer>
+
+        <div id="loading" class="loading">
+            Chargement des photos...
+        </div>
 
 
-    <!-- ================= MODAL ADMIN ================= -->
+        <div
+            id="gallery"
+            class="gallery">
+        </div>
 
-    <div id="adminModal" class="admin-modal">
 
-        <div class="admin-modal-content">
+        <div
+            id="emptyGallery"
+            class="empty-gallery hidden">
 
-            <button
-                id="closeModal"
-                class="modal-close">
-                ×
-            </button>
+            <div>📷</div>
 
-            <h2>Administration</h2>
+            <h3>Aucune photo</h3>
 
             <p>
-                Activez le mode administrateur pour gérer les photos.
+                Aucune photo ne correspond à votre recherche.
             </p>
 
-            <button
-                id="adminDemo"
-                class="button primary-button">
+        </div>
 
-                🔓 Activer le mode administrateur
+    </section>
+
+</main>
+
+
+<!-- Modal connexion administrateur -->
+
+<div
+    id="loginModal"
+    class="modal hidden">
+
+    <div class="modal-content login-content">
+
+        <button
+            id="closeLogin"
+            class="modal-close"
+            aria-label="Fermer">
+
+            ×
+
+        </button>
+
+
+        <div class="login-icon">
+            🔐
+        </div>
+
+        <h2>Administration</h2>
+
+        <p>
+            Connectez-vous pour gérer les photos.
+        </p>
+
+
+        <form id="loginForm">
+
+            <label for="loginEmail">
+                Adresse e-mail
+            </label>
+
+            <input
+                type="email"
+                id="loginEmail"
+                placeholder="Votre adresse e-mail"
+                required
+            >
+
+
+            <label for="loginPassword">
+                Mot de passe
+            </label>
+
+            <input
+                type="password"
+                id="loginPassword"
+                placeholder="Votre mot de passe"
+                required
+            >
+
+
+            <button
+                type="submit"
+                class="primary-button">
+
+                Se connecter
 
             </button>
 
+        </form>
+
+
+        <div
+            id="loginStatus"
+            class="status">
         </div>
 
     </div>
 
-
-    <!-- ================= VISIONNEUSE ================= -->
-
-    <div id="photoModal" class="photo-modal">
-
-        <button
-            class="viewer-close"
-            onclick="closePhoto()">
-            ×
-        </button>
+</div>
 
 
-        <button
-            class="viewer-prev"
-            onclick="previousPhoto()">
-            ❮
-        </button>
+<!-- Visionneuse -->
+
+<div
+    id="viewerModal"
+    class="viewer-modal hidden">
+
+    <button
+        id="closeViewer"
+        class="viewer-close"
+        aria-label="Fermer">
+
+        ×
+
+    </button>
 
 
-        <div class="viewer-content">
+    <button
+        id="previousPhoto"
+        class="viewer-navigation viewer-prev"
+        aria-label="Photo précédente">
 
-            <img
-                id="modalImage"
-                src=""
-                alt="Photo en plein écran"
-            >
+        ‹
+
+    </button>
 
 
-            <div class="viewer-bottom">
+    <div class="viewer-content">
 
-                <span id="photoPosition">
-                    1 / 1
-                </span>
+        <img
+            id="viewerImage"
+            src=""
+            alt="Photo">
+
+        <div class="viewer-info">
+
+            <h3 id="viewerTitle"></h3>
+
+            <p id="viewerAlbum"></p>
+
+
+            <div class="viewer-buttons">
 
                 <a
-                    id="modalDownload"
-                    class="viewer-download"
-                    href="#"
+                    id="downloadPhoto"
+                    class="secondary-button"
+                    href=""
                     download>
 
                     ⬇ Télécharger
@@ -493,20 +428,36 @@
 
         </div>
 
-
-        <button
-            class="viewer-next"
-            onclick="nextPhoto()">
-
-            ❯
-
-        </button>
-
     </div>
 
 
-    <script src="script.js"></script>
+    <button
+        id="nextPhoto"
+        class="viewer-navigation viewer-next"
+        aria-label="Photo suivante">
+
+        ›
+
+    </button>
+
+</div>
+
+
+<footer class="site-footer">
+
+    <p>
+        © <span id="currentYear"></span>
+        Médiathèque Wilfrid HOUNGUE
+    </p>
+
+    <p>
+        Recherche • Élevage • Environnement • Science
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
 
 </body>
-
 </html>

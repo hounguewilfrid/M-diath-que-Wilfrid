@@ -1,923 +1,1920 @@
-/* =========================================
+/* ============================================================
+   MÉDIATHÈQUE WILFRID HOUNGUE
+   Connexion Supabase
+   ============================================================ */
+
+
+/* ============================================================
+   CONFIGURATION SUPABASE
+   ============================================================ */
+
+const SUPABASE_URL = "https://uihuiiarigdcnitzbeoy.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable__QlnDUAaH2Jm8wBqz02XXg_JnfCZXqX";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+/* ============================================================
    VARIABLES
-========================================= */
+   ============================================================ */
 
-const photoInput =
-    document.getElementById("photoInput");
+const ALBUMS = [
+    "Travaux de recherche",
+    "Terrain",
+    "Thèse",
+    "Photos personnelles"
+];
 
-const choosePhotoButton =
-    document.getElementById("choosePhotoButton");
+const ALBUM_SLUGS = {
+    "Travaux de recherche": "travaux-de-recherche",
+    "Terrain": "terrain",
+    "Thèse": "these",
+    "Photos personnelles": "photos-personnelles"
+};
 
-const gallery =
-    document.getElementById("gallery");
 
-const emptyGallery =
-    document.getElementById("emptyGallery");
+let allPhotos = [];
+let displayedPhotos = [];
 
-const photoCount =
-    document.getElementById("photoCount");
+let selectedFiles = [];
 
-const uploadBox =
-    document.getElementById("uploadBox");
+let currentAlbum = null;
+
+let currentViewerIndex = 0;
+
+let currentUser = null;
+
+let isAdmin = false;
+
+
+/* ============================================================
+   ÉLÉMENTS HTML
+   ============================================================ */
 
 const albumSelect =
     document.getElementById("albumSelect");
 
-const adminButton =
-    document.getElementById("adminButton");
+const photoInput =
+    document.getElementById("photoInput");
 
-const adminModal =
-    document.getElementById("adminModal");
+const selectedFilesContainer =
+    document.getElementById("selectedFiles");
 
-const closeModal =
-    document.getElementById("closeModal");
+const uploadButton =
+    document.getElementById("uploadButton");
 
-const adminDemo =
-    document.getElementById("adminDemo");
+const uploadStatus =
+    document.getElementById("uploadStatus");
 
-const searchInput =
-    document.getElementById("searchInput");
+const gallery =
+    document.getElementById("gallery");
+
+const loading =
+    document.getElementById("loading");
+
+const emptyGallery =
+    document.getElementById("emptyGallery");
 
 const galleryTitle =
     document.getElementById("galleryTitle");
 
-const showAllButton =
-    document.getElementById("showAllButton");
+const gallerySubtitle =
+    document.getElementById("gallerySubtitle");
 
+const searchInput =
+    document.getElementById("searchInput");
 
-/* =========================================
-   VARIABLES DE TRAVAIL
-========================================= */
+const allPhotosButton =
+    document.getElementById("allPhotosButton");
 
-let photos = [];
+const adminButton =
+    document.getElementById("adminButton");
 
-let adminMode = false;
 
-let selectedAlbum = "Tous";
+/* ============================================================
+   MODAL CONNEXION
+   ============================================================ */
 
-let currentPhotoIndex = 0;
+const loginModal =
+    document.getElementById("loginModal");
 
+const closeLogin =
+    document.getElementById("closeLogin");
 
-/* =========================================
-   CHARGEMENT DES PHOTOS
-========================================= */
+const loginForm =
+    document.getElementById("loginForm");
 
-function loadPhotos() {
+const loginEmail =
+    document.getElementById("loginEmail");
 
-    const saved =
-        localStorage.getItem(
-            "wilfrid_media_photos"
-        );
+const loginPassword =
+    document.getElementById("loginPassword");
 
-    if (saved) {
+const loginStatus =
+    document.getElementById("loginStatus");
 
-        try {
 
-            photos = JSON.parse(saved);
+/* ============================================================
+   VISIONNEUSE
+   ============================================================ */
 
-        } catch (error) {
+const viewerModal =
+    document.getElementById("viewerModal");
 
-            photos = [];
+const closeViewer =
+    document.getElementById("closeViewer");
 
-        }
+const viewerImage =
+    document.getElementById("viewerImage");
 
-    }
+const viewerTitle =
+    document.getElementById("viewerTitle");
 
-    renderGallery();
+const viewerAlbum =
+    document.getElementById("viewerAlbum");
 
-    updateAlbumCounts();
-}
+const downloadPhoto =
+    document.getElementById("downloadPhoto");
 
+const previousPhoto =
+    document.getElementById("previousPhoto");
 
-/* =========================================
-   SAUVEGARDE
-========================================= */
+const nextPhoto =
+    document.getElementById("nextPhoto");
 
-function savePhotos() {
 
-    localStorage.setItem(
-        "wilfrid_media_photos",
-        JSON.stringify(photos)
-    );
-}
+/* ============================================================
+   INITIALISATION
+   ============================================================ */
 
+document.addEventListener("DOMContentLoaded", async () => {
 
-/* =========================================
-   OUVRIR LE SÉLECTEUR DE PHOTOS
-========================================= */
+    document.getElementById("currentYear").textContent =
+        new Date().getFullYear();
 
-choosePhotoButton.addEventListener(
-    "click",
-    function () {
+    configureEvents();
 
-        photoInput.click();
+    await checkAuthentication();
 
-    }
-);
+    await loadPhotos();
 
+});
 
-/* =========================================
-   SÉLECTION DE PHOTOS
-========================================= */
 
-photoInput.addEventListener(
-    "change",
-    function () {
+/* ============================================================
+   ÉVÉNEMENTS
+   ============================================================ */
 
-        addPhotos(this.files);
+function configureEvents() {
 
-    }
-);
+    /* Choix de fichiers */
 
-
-/* =========================================
-   GLISSER / DÉPOSER
-========================================= */
-
-uploadBox.addEventListener(
-    "dragover",
-    function (event) {
-
-        event.preventDefault();
-
-        uploadBox.classList.add("dragover");
-
-    }
-);
-
-
-uploadBox.addEventListener(
-    "dragleave",
-    function () {
-
-        uploadBox.classList.remove("dragover");
-
-    }
-);
-
-
-uploadBox.addEventListener(
-    "drop",
-    function (event) {
-
-        event.preventDefault();
-
-        uploadBox.classList.remove("dragover");
-
-        addPhotos(event.dataTransfer.files);
-
-    }
-);
-
-
-/* =========================================
-   AJOUTER DES PHOTOS
-========================================= */
-
-function addPhotos(files) {
-
-    const imageFiles =
-        Array.from(files).filter(
-            file =>
-                file.type.startsWith("image/")
-        );
-
-
-    if (imageFiles.length === 0) {
-
-        alert(
-            "Veuillez sélectionner des images."
-        );
-
-        return;
-    }
-
-
-    const album =
-        albumSelect.value;
-
-
-    imageFiles.forEach(
-        function (file) {
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload =
-                function (event) {
-
-                    const photo = {
-
-                        id:
-                            Date.now() +
-                            Math.random(),
-
-                        name:
-                            file.name,
-
-                        date:
-                            new Date()
-                                .toLocaleDateString(
-                                    "fr-FR"
-                                ),
-
-                        album:
-                            album,
-
-                        image:
-                            event.target.result
-
-                    };
-
-
-                    photos.unshift(photo);
-
-
-                    savePhotos();
-
-                    renderGallery();
-
-                    updateAlbumCounts();
-
-                };
-
-
-            reader.readAsDataURL(file);
-
-        }
+    photoInput.addEventListener(
+        "change",
+        handleFileSelection
     );
 
 
-    photoInput.value = "";
-
-}
-
-
-/* =========================================
-   AFFICHER LA GALERIE
-========================================= */
-
-function renderGallery() {
-
-    const search =
-        searchInput
-            ? searchInput.value
-                .toLowerCase()
-                .trim()
-            : "";
-
-
-    let filteredPhotos =
-        photos.filter(
-            function (photo) {
-
-                const matchesAlbum =
-                    selectedAlbum === "Tous" ||
-                    photo.album === selectedAlbum;
-
-
-                const matchesSearch =
-                    photo.name
-                        .toLowerCase()
-                        .includes(search);
-
-
-                return (
-                    matchesAlbum &&
-                    matchesSearch
-                );
-
-            }
-        );
-
-
-    gallery.innerHTML = "";
-
-
-    /* TITRE */
-
-    if (selectedAlbum === "Tous") {
-
-        galleryTitle.textContent =
-            "Toutes les photos";
-
-    } else {
-
-        galleryTitle.textContent =
-            selectedAlbum;
-
-    }
-
-
-    /* AUCUNE PHOTO */
-
-    if (filteredPhotos.length === 0) {
-
-        emptyGallery.style.display =
-            "block";
-
-    } else {
-
-        emptyGallery.style.display =
-            "none";
-
-
-        filteredPhotos.forEach(
-            function (photo) {
-
-                const card =
-                    document.createElement("div");
-
-
-                card.className =
-                    "photo-card";
-
-
-                card.innerHTML = `
-
-                    <img
-                        src="${photo.image}"
-                        alt="${photo.name}"
-                        onclick="openPhoto(${photo.id})"
-                    >
-
-                    <div class="photo-info">
-
-                        <strong>
-                            ${escapeHtml(photo.name)}
-                        </strong>
-
-                        <span>
-                            ${photo.date}
-                        </span>
-
-                        <span class="photo-album">
-                            📁 ${escapeHtml(photo.album)}
-                        </span>
-
-                        <div>
-
-                            <a
-                                href="${photo.image}"
-                                download="${escapeHtml(photo.name)}"
-                                class="download-button">
-
-                                ⬇ Télécharger
-
-                            </a>
-
-
-                            <button
-                                class="delete-button"
-                                onclick="deletePhoto(${photo.id})">
-
-                                🗑 Supprimer
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-
-                gallery.appendChild(card);
-
-            }
-        );
-
-    }
-
-
-    photoCount.textContent =
-        photos.length;
-
-}
-
-
-/* =========================================
-   ÉVITER LES PROBLÈMES AVEC LES NOMS
-========================================= */
-
-function escapeHtml(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent = text;
-
-    return div.innerHTML;
-}
-
-
-/* =========================================
-   COMPTER LES PHOTOS PAR ALBUM
-========================================= */
-
-function updateAlbumCounts() {
-
-    const albums = [
-        "Travaux de recherche",
-        "Terrain",
-        "Thèse",
-        "Photos personnelles"
-    ];
-
-
-    albums.forEach(
-        function (album) {
-
-            const count =
-                photos.filter(
-                    photo =>
-                        photo.album === album
-                ).length;
-
-
-            const element =
-                document.querySelector(
-                    `[data-count-album="${album}"]`
-                );
-
-
-            if (element) {
-
-                element.textContent =
-                    count +
-                    (count <= 1
-                        ? " photo"
-                        : " photos");
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================
-   CLIQUER SUR UN ALBUM
-========================================= */
-
-document
-    .querySelectorAll(".album-card")
-    .forEach(
-        function (button) {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    selectedAlbum =
-                        this.dataset.album;
-
-                    renderGallery();
-
-                    document
-                        .getElementById("galerie")
-                        .scrollIntoView({
-                            behavior: "smooth"
-                        });
-
-                }
-            );
-
-        }
+    /* Choix de l'album */
+
+    albumSelect.addEventListener(
+        "change",
+        updateUploadButton
     );
 
 
-/* =========================================
-   TOUTES LES PHOTOS
-========================================= */
+    /* Envoi */
 
-showAllButton.addEventListener(
-    "click",
-    function () {
-
-        selectedAlbum = "Tous";
-
-        renderGallery();
-
-        document
-            .getElementById("galerie")
-            .scrollIntoView({
-                behavior: "smooth"
-            });
-
-    }
-);
+    uploadButton.addEventListener(
+        "click",
+        uploadPhotos
+    );
 
 
-/* =========================================
-   RECHERCHE
-========================================= */
-
-if (searchInput) {
+    /* Recherche */
 
     searchInput.addEventListener(
         "input",
-        function () {
+        filterPhotos
+    );
+
+
+    /* Toutes les photos */
+
+    allPhotosButton.addEventListener(
+        "click",
+        () => {
+
+            currentAlbum = null;
+
+            document
+                .querySelectorAll(".album-card")
+                .forEach(card => {
+                    card.classList.remove("active");
+                });
+
+            galleryTitle.textContent =
+                "Toutes les photos";
+
+            gallerySubtitle.textContent =
+                "Photos disponibles dans la médiathèque.";
 
             renderGallery();
 
         }
     );
 
+
+    /* Albums */
+
+    document
+        .querySelectorAll(".album-card")
+        .forEach(card => {
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    const album =
+                        card.dataset.album;
+
+                    selectAlbum(album);
+
+                }
+            );
+
+        });
+
+
+    /* Administration */
+
+    adminButton.addEventListener(
+        "click",
+        handleAdminButton
+    );
+
+
+    /* Connexion */
+
+    closeLogin.addEventListener(
+        "click",
+        closeLoginModal
+    );
+
+
+    loginModal.addEventListener(
+        "click",
+        event => {
+
+            if (event.target === loginModal) {
+                closeLoginModal();
+            }
+
+        }
+    );
+
+
+    loginForm.addEventListener(
+        "submit",
+        handleLogin
+    );
+
+
+    /* Visionneuse */
+
+    closeViewer.addEventListener(
+        "click",
+        closeViewerModal
+    );
+
+
+    viewerModal.addEventListener(
+        "click",
+        event => {
+
+            if (event.target === viewerModal) {
+                closeViewerModal();
+            }
+
+        }
+    );
+
+
+    previousPhoto.addEventListener(
+        "click",
+        showPreviousPhoto
+    );
+
+
+    nextPhoto.addEventListener(
+        "click",
+        showNextPhoto
+    );
+
+
+    /* Clavier */
+
+    document.addEventListener(
+        "keydown",
+        handleKeyboard
+    );
+
 }
 
 
-/* =========================================
-   SUPPRESSION
-========================================= */
+/* ============================================================
+   AUTHENTIFICATION
+   ============================================================ */
 
-function deletePhoto(id) {
+async function checkAuthentication() {
 
-    if (!adminMode) {
+    try {
 
-        alert(
-            "Accès administrateur requis."
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.getUser();
+
+
+        if (error) {
+            currentUser = null;
+            isAdmin = false;
+            updateAdminInterface();
+            return;
+        }
+
+
+        currentUser =
+            data.user || null;
+
+
+        if (currentUser) {
+
+            await checkAdmin();
+
+        } else {
+
+            isAdmin = false;
+
+        }
+
+
+        updateAdminInterface();
+
+
+    } catch (error) {
+
+        console.error(
+            "Erreur authentification :",
+            error
         );
 
-        return;
+        currentUser = null;
+        isAdmin = false;
+
+        updateAdminInterface();
+
     }
 
 
-    const confirmation =
-        confirm(
-            "Voulez-vous vraiment supprimer cette photo ?"
-        );
+    supabaseClient.auth.onAuthStateChange(
+        async (event, session) => {
+
+            currentUser =
+                session?.user || null;
 
 
-    if (!confirmation) {
+            if (currentUser) {
 
-        return;
+                await checkAdmin();
 
-    }
+            } else {
 
+                isAdmin = false;
 
-    photos =
-        photos.filter(
-            photo =>
-                photo.id !== id
-        );
+            }
 
 
-    savePhotos();
+            updateAdminInterface();
 
-    renderGallery();
-
-    updateAlbumCounts();
+        }
+    );
 
 }
 
 
-/* =========================================
-   ADMINISTRATION
-========================================= */
+/* ============================================================
+   VÉRIFICATION ADMINISTRATEUR
+   ============================================================ */
 
-adminButton.addEventListener(
-    "click",
-    function () {
+async function checkAdmin() {
 
-        adminModal.style.display =
-            "flex";
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.rpc(
+                "is_admin"
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Erreur vérification admin :",
+                error
+            );
+
+            isAdmin = false;
+
+            return;
+        }
+
+
+        isAdmin = data === true;
+
+
+    } catch (error) {
+
+        console.error(
+            "Erreur admin :",
+            error
+        );
+
+        isAdmin = false;
 
     }
-);
+
+}
 
 
-closeModal.addEventListener(
-    "click",
-    function () {
+/* ============================================================
+   INTERFACE ADMINISTRATEUR
+   ============================================================ */
 
-        adminModal.style.display =
-            "none";
+function updateAdminInterface() {
 
-    }
-);
-
-
-adminDemo.addEventListener(
-    "click",
-    function () {
-
-        adminMode = true;
+    if (isAdmin) {
 
         document.body.classList.add(
             "admin-mode"
         );
 
-        adminModal.style.display =
-            "none";
+        adminButton.textContent =
+            "🚪 Déconnexion";
+
+    } else {
+
+        document.body.classList.remove(
+            "admin-mode"
+        );
 
         adminButton.textContent =
-            "🔓 Mode administrateur";
-
-        alert(
-            "Mode administrateur activé. Ceci est uniquement une démonstration."
-        );
+            "🔐 Administration";
 
     }
-);
+
+}
 
 
-window.addEventListener(
-    "click",
-    function (event) {
+/* ============================================================
+   BOUTON ADMINISTRATION
+   ============================================================ */
 
-        if (
-            event.target === adminModal
-        ) {
+async function handleAdminButton() {
 
-            adminModal.style.display =
-                "none";
+    if (isAdmin) {
 
-        }
+        await logout();
+
+    } else {
+
+        openLoginModal();
 
     }
-);
+
+}
 
 
-/* =========================================
-   VISIONNEUSE
-========================================= */
+/* ============================================================
+   OUVRIR CONNEXION
+   ============================================================ */
 
-function openPhoto(id) {
+function openLoginModal() {
 
-    const index =
-        photos.findIndex(
-            photo =>
-                photo.id === id
+    loginModal.classList.remove("hidden");
+
+    loginEmail.focus();
+
+}
+
+
+/* ============================================================
+   FERMER CONNEXION
+   ============================================================ */
+
+function closeLoginModal() {
+
+    loginModal.classList.add("hidden");
+
+    loginStatus.textContent = "";
+
+    loginStatus.className = "status";
+
+}
+
+
+/* ============================================================
+   CONNEXION ADMIN
+   ============================================================ */
+
+async function handleLogin(event) {
+
+    event.preventDefault();
+
+
+    const email =
+        loginEmail.value.trim();
+
+    const password =
+        loginPassword.value;
+
+
+    if (!email || !password) {
+
+        showStatus(
+            loginStatus,
+            "Veuillez remplir tous les champs.",
+            "error"
         );
-
-
-    if (index === -1) {
 
         return;
-
     }
 
 
-    currentPhotoIndex = index;
-
-    showCurrentPhoto();
-
-
-    document
-        .getElementById("photoModal")
-        .style.display = "flex";
-
-}
-
-
-function showCurrentPhoto() {
-
-    if (photos.length === 0) {
-
-        return;
-
-    }
-
-
-    const photo =
-        photos[currentPhotoIndex];
-
-
-    const modalImage =
-        document.getElementById(
-            "modalImage"
-        );
-
-
-    const modalDownload =
-        document.getElementById(
-            "modalDownload"
-        );
-
-
-    const photoPosition =
-        document.getElementById(
-            "photoPosition"
-        );
-
-
-    modalImage.src =
-        photo.image;
-
-
-    modalImage.alt =
-        photo.name;
-
-
-    modalDownload.href =
-        photo.image;
-
-
-    modalDownload.download =
-        photo.name;
-
-
-    photoPosition.textContent =
-        `${currentPhotoIndex + 1} / ${photos.length}`;
-
-}
-
-
-/* =========================================
-   PHOTO SUIVANTE
-========================================= */
-
-function nextPhoto() {
-
-    if (photos.length === 0) {
-
-        return;
-
-    }
-
-
-    currentPhotoIndex++;
-
-
-    if (
-        currentPhotoIndex >=
-        photos.length
-    ) {
-
-        currentPhotoIndex = 0;
-
-    }
-
-
-    showCurrentPhoto();
-
-}
-
-
-/* =========================================
-   PHOTO PRÉCÉDENTE
-========================================= */
-
-function previousPhoto() {
-
-    if (photos.length === 0) {
-
-        return;
-
-    }
-
-
-    currentPhotoIndex--;
-
-
-    if (currentPhotoIndex < 0) {
-
-        currentPhotoIndex =
-            photos.length - 1;
-
-    }
-
-
-    showCurrentPhoto();
-
-}
-
-
-/* =========================================
-   FERMER LA PHOTO
-========================================= */
-
-function closePhoto() {
-
-    document
-        .getElementById("photoModal")
-        .style.display = "none";
-
-
-    document
-        .getElementById("modalImage")
-        .src = "";
-
-}
-
-
-/* =========================================
-   CLAVIER
-========================================= */
-
-document.addEventListener(
-    "keydown",
-    function (event) {
-
-        const modal =
-            document.getElementById(
-                "photoModal"
-            );
-
-
-        if (
-            modal.style.display !== "flex"
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            event.key === "ArrowRight"
-        ) {
-
-            nextPhoto();
-
-        }
-
-
-        if (
-            event.key === "ArrowLeft"
-        ) {
-
-            previousPhoto();
-
-        }
-
-
-        if (
-            event.key === "Escape"
-        ) {
-
-            closePhoto();
-
-        }
-
-    }
-);
-
-
-/* =========================================
-   TOUCH / GLISSEMENT SUR TÉLÉPHONE
-========================================= */
-
-let touchStartX = 0;
-
-let touchEndX = 0;
-
-
-const photoModal =
-    document.getElementById(
-        "photoModal"
+    showStatus(
+        loginStatus,
+        "Connexion en cours...",
+        "info"
     );
 
 
-photoModal.addEventListener(
-    "touchstart",
-    function (event) {
+    try {
 
-        touchStartX =
-            event.changedTouches[0].screenX;
-
-    }
-);
-
-
-photoModal.addEventListener(
-    "touchend",
-    function (event) {
-
-        touchEndX =
-            event.changedTouches[0].screenX;
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
 
 
-        const difference =
-            touchStartX - touchEndX;
+        if (error) {
 
-
-        if (Math.abs(difference) < 50) {
-
-            return;
+            throw error;
 
         }
 
 
-        if (difference > 0) {
+        currentUser =
+            data.user;
 
-            nextPhoto();
 
-        } else {
+        await checkAdmin();
 
-            previousPhoto();
+
+        if (!isAdmin) {
+
+            await supabaseClient.auth.signOut();
+
+            currentUser = null;
+
+            throw new Error(
+                "Ce compte n'a pas les droits administrateur."
+            );
+
+        }
+
+
+        updateAdminInterface();
+
+
+        showStatus(
+            loginStatus,
+            "Connexion réussie.",
+            "success"
+        );
+
+
+        setTimeout(
+            closeLoginModal,
+            800
+        );
+
+
+        await loadPhotos();
+
+
+    } catch (error) {
+
+        console.error(
+            "Erreur connexion :",
+            error
+        );
+
+
+        showStatus(
+            loginStatus,
+            error.message ||
+            "Impossible de se connecter.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   DÉCONNEXION
+   ============================================================ */
+
+async function logout() {
+
+    try {
+
+        await supabaseClient.auth.signOut();
+
+        currentUser = null;
+
+        isAdmin = false;
+
+        updateAdminInterface();
+
+        renderGallery();
+
+
+    } catch (error) {
+
+        console.error(
+            "Erreur déconnexion :",
+            error
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   CHARGER LES PHOTOS
+   ============================================================ */
+
+async function loadPhotos() {
+
+    loading.classList.remove("hidden");
+
+    gallery.classList.add("hidden");
+
+    emptyGallery.classList.add("hidden");
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("photos")
+                .select("*")
+                .order(
+                    "uploaded_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        allPhotos =
+            data || [];
+
+
+        updateAlbumCounts();
+
+        renderGallery();
+
+
+    } catch (error) {
+
+        console.error(
+            "Erreur chargement photos :",
+            error
+        );
+
+
+        loading.textContent =
+            "Impossible de charger les photos. Vérifiez la connexion à Supabase.";
+
+    } finally {
+
+        loading.classList.add("hidden");
+
+    }
+
+}
+
+
+/* ============================================================
+   URL PUBLIQUE D'UNE PHOTO
+   ============================================================ */
+
+function getPhotoUrl(storagePath) {
+
+    const {
+        data
+    } =
+        supabaseClient
+            .storage
+            .from("photos")
+            .getPublicUrl(storagePath);
+
+
+    return data.publicUrl;
+
+}
+
+
+/* ============================================================
+   AFFICHER LES PHOTOS
+   ============================================================ */
+
+function renderGallery() {
+
+    const search =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    displayedPhotos =
+        allPhotos.filter(photo => {
+
+            const matchesAlbum =
+                !currentAlbum ||
+                photo.album === currentAlbum;
+
+
+            const matchesSearch =
+                !search ||
+                photo.file_name
+                    .toLowerCase()
+                    .includes(search) ||
+                photo.album
+                    .toLowerCase()
+                    .includes(search);
+
+
+            return (
+                matchesAlbum &&
+                matchesSearch
+            );
+
+        });
+
+
+    gallery.innerHTML = "";
+
+
+    if (displayedPhotos.length === 0) {
+
+        gallery.classList.add("hidden");
+
+        emptyGallery.classList.remove(
+            "hidden"
+        );
+
+        return;
+
+    }
+
+
+    emptyGallery.classList.add(
+        "hidden"
+    );
+
+    gallery.classList.remove(
+        "hidden"
+    );
+
+
+    displayedPhotos.forEach(
+        (photo, index) => {
+
+            const card =
+                createPhotoCard(
+                    photo,
+                    index
+                );
+
+
+            gallery.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   CRÉER UNE CARTE PHOTO
+   ============================================================ */
+
+function createPhotoCard(
+    photo,
+    index
+) {
+
+    const card =
+        document.createElement("article");
+
+    card.className =
+        "photo-card";
+
+
+    const imageContainer =
+        document.createElement("div");
+
+    imageContainer.className =
+        "photo-image-container";
+
+
+    const image =
+        document.createElement("img");
+
+    image.className =
+        "photo-image";
+
+    image.src =
+        getPhotoUrl(
+            photo.storage_path
+        );
+
+    image.alt =
+        photo.file_name;
+
+    image.loading =
+        "lazy";
+
+
+    image.addEventListener(
+        "click",
+        () => {
+            openViewer(index);
+        }
+    );
+
+
+    image.addEventListener(
+        "error",
+        () => {
+
+            image.alt =
+                "Image indisponible";
+
+        }
+    );
+
+
+    imageContainer.appendChild(
+        image
+    );
+
+
+    if (isAdmin) {
+
+        const deleteButton =
+            document.createElement("button");
+
+        deleteButton.className =
+            "delete-button";
+
+        deleteButton.innerHTML =
+            "🗑";
+
+        deleteButton.title =
+            "Supprimer cette photo";
+
+
+        deleteButton.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                deletePhoto(photo);
+
+            }
+        );
+
+
+        imageContainer.appendChild(
+            deleteButton
+        );
+
+    }
+
+
+    const info =
+        document.createElement("div");
+
+    info.className =
+        "photo-info";
+
+
+    const name =
+        document.createElement("div");
+
+    name.className =
+        "photo-name";
+
+    name.textContent =
+        photo.file_name;
+
+
+    const album =
+        document.createElement("div");
+
+    album.className =
+        "photo-album";
+
+    album.textContent =
+        photo.album;
+
+
+    info.appendChild(name);
+    info.appendChild(album);
+
+
+    card.appendChild(
+        imageContainer
+    );
+
+    card.appendChild(
+        info
+    );
+
+
+    return card;
+
+}
+
+
+/* ============================================================
+   SÉLECTIONNER UN ALBUM
+   ============================================================ */
+
+function selectAlbum(album) {
+
+    currentAlbum =
+        album;
+
+
+    albumSelect.value =
+        album;
+
+
+    document
+        .querySelectorAll(".album-card")
+        .forEach(card => {
+
+            card.classList.toggle(
+                "active",
+                card.dataset.album === album
+            );
+
+        });
+
+
+    galleryTitle.textContent =
+        album;
+
+
+    gallerySubtitle.textContent =
+        `Photos de l'album « ${album} ».`;
+
+
+    renderGallery();
+
+
+    document
+        .querySelector(".section:last-of-type")
+        ?.scrollIntoView({
+            behavior: "smooth"
+        });
+
+}
+
+
+/* ============================================================
+   RECHERCHE
+   ============================================================ */
+
+function filterPhotos() {
+
+    renderGallery();
+
+}
+
+
+/* ============================================================
+   COMPTE DES PHOTOS PAR ALBUM
+   ============================================================ */
+
+function updateAlbumCounts() {
+
+    const counts = {
+
+        "Travaux de recherche": 0,
+
+        "Terrain": 0,
+
+        "Thèse": 0,
+
+        "Photos personnelles": 0
+
+    };
+
+
+    allPhotos.forEach(
+        photo => {
+
+            if (
+                counts.hasOwnProperty(
+                    photo.album
+                )
+            ) {
+
+                counts[photo.album]++;
+
+            }
+
+        }
+    );
+
+
+    updateCount(
+        "count-recherche",
+        counts["Travaux de recherche"]
+    );
+
+    updateCount(
+        "count-terrain",
+        counts["Terrain"]
+    );
+
+    updateCount(
+        "count-these",
+        counts["Thèse"]
+    );
+
+    updateCount(
+        "count-personnelles",
+        counts["Photos personnelles"]
+    );
+
+}
+
+
+function updateCount(
+    elementId,
+    count
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    element.textContent =
+        `${count} photo${count > 1 ? "s" : ""}`;
+
+}
+
+
+/* ============================================================
+   SÉLECTION DES FICHIERS
+   ============================================================ */
+
+function handleFileSelection() {
+
+    selectedFiles =
+        Array.from(
+            photoInput.files
+        );
+
+
+    renderSelectedFiles();
+
+    updateUploadButton();
+
+}
+
+
+/* ============================================================
+   AFFICHER LES FICHIERS SÉLECTIONNÉS
+   ============================================================ */
+
+function renderSelectedFiles() {
+
+    selectedFilesContainer.innerHTML =
+        "";
+
+
+    if (
+        selectedFiles.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    selectedFiles.forEach(
+        file => {
+
+            const row =
+                document.createElement("div");
+
+            row.className =
+                "selected-file";
+
+
+            const name =
+                document.createElement("span");
+
+            name.textContent =
+                file.name;
+
+
+            const size =
+                document.createElement("span");
+
+            size.className =
+                "selected-file-size";
+
+            size.textContent =
+                formatFileSize(
+                    file.size
+                );
+
+
+            row.appendChild(name);
+
+            row.appendChild(size);
+
+            selectedFilesContainer.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   ACTIVATION BOUTON ENVOI
+   ============================================================ */
+
+function updateUploadButton() {
+
+    const albumSelected =
+        albumSelect.value !== "";
+
+    const filesSelected =
+        selectedFiles.length > 0;
+
+
+    uploadButton.disabled =
+        !albumSelected ||
+        !filesSelected;
+
+}
+
+
+/* ============================================================
+   UPLOAD DES PHOTOS
+   ============================================================ */
+
+async function uploadPhotos() {
+
+    const album =
+        albumSelect.value;
+
+
+    if (!album) {
+
+        showStatus(
+            uploadStatus,
+            "Veuillez choisir un album.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        selectedFiles.length === 0
+    ) {
+
+        showStatus(
+            uploadStatus,
+            "Veuillez sélectionner au moins une photo.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const invalidFiles =
+        selectedFiles.filter(
+            file => {
+
+                const validType = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp",
+                    "image/gif"
+                ].includes(
+                    file.type
+                );
+
+
+                const validSize =
+                    file.size <=
+                    10 * 1024 * 1024;
+
+
+                return (
+                    !validType ||
+                    !validSize
+                );
+
+            }
+        );
+
+
+    if (
+        invalidFiles.length > 0
+    ) {
+
+        showStatus(
+            uploadStatus,
+            "Une ou plusieurs photos ne respectent pas les formats ou la taille maximale de 10 MB.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    uploadButton.disabled =
+        true;
+
+
+    showStatus(
+        uploadStatus,
+        "Envoi des photos en cours...",
+        "info"
+    );
+
+
+    let successCount = 0;
+
+    let errorCount = 0;
+
+
+    for (
+        const file of selectedFiles
+    ) {
+
+        try {
+
+            const extension =
+                getExtension(
+                    file.name
+                );
+
+
+            const safeName =
+                sanitizeFileName(
+                    file.name
+                );
+
+
+            const slug =
+                ALBUM_SLUGS[album];
+
+
+            const uniqueId =
+                crypto.randomUUID();
+
+
+            const storagePath =
+                `${slug}/${uniqueId}-${safeName}`;
+
+
+            /* Envoi dans Storage */
+
+            const {
+                error: uploadError
+            } =
+                await supabaseClient
+                    .storage
+                    .from("photos")
+                    .upload(
+                        storagePath,
+                        file,
+                        {
+                            cacheControl: "3600",
+                            upsert: false,
+                            contentType: file.type
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                throw uploadError;
+
+            }
+
+
+            /* Enregistrement dans la table */
+
+            const {
+                error: databaseError
+            } =
+                await supabaseClient
+                    .from("photos")
+                    .insert({
+                        file_name: file.name,
+                        storage_path: storagePath,
+                        album: album,
+                        uploaded_by:
+                            currentUser
+                                ? currentUser.id
+                                : null
+                    });
+
+
+            if (databaseError) {
+
+                /* Nettoyage du fichier si la base échoue */
+
+                await supabaseClient
+                    .storage
+                    .from("photos")
+                    .remove([
+                        storagePath
+                    ]);
+
+
+                throw databaseError;
+
+            }
+
+
+            successCount++;
+
+
+        } catch (error) {
+
+            console.error(
+                "Erreur upload :",
+                error
+            );
+
+            errorCount++;
 
         }
 
     }
-);
 
 
-/* =========================================
-   DÉMARRAGE
-========================================= */
+    selectedFiles = [];
 
-loadPhotos();
+    photoInput.value = "";
+
+    renderSelectedFiles();
+
+    updateUploadButton();
+
+
+    if (
+        successCount > 0 &&
+        errorCount === 0
+    ) {
+
+        showStatus(
+            uploadStatus,
+            `${successCount} photo${successCount > 1 ? "s" : ""} envoyée${successCount > 1 ? "s" : ""} avec succès.`,
+            "success"
+        );
+
+    } else if (
+        successCount > 0
+    ) {
+
+        showStatus(
+            uploadStatus,
+            `${successCount} photo${successCount > 1 ? "s" : ""} envoyée${successCount > 1 ? "s" : ""}, mais ${errorCount} n'ont pas pu être envoyée${errorCount > 1 ? "s" : ""}.`,
+            "info"
+        );
+
+    } else {
+
+        showStatus(
+            uploadStatus,
+            "Aucune photo n'a pu être envoyée.",
+            "error"
+        );
+
+    }
+
+
+    await loadPhotos();
+
+}
+
+
+/* ============================================================
+   SUPPRESSION D'UNE PHOTO
+   ============================================================ */
+
+async function deletePhoto(photo) {
+
+    if (!isAdmin) {
+
+        alert(
+            "Vous n'avez pas les droits pour supprimer cette photo."
+        );
+
+        return;
+
+    }
+
+
+    const confirmation =
+        confirm(
+            `Voulez-vous vraiment supprimer la photo "${photo.file_name}" ?`
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    try {
+
+        /* Suppression du fichier */
+
+        const {
+            error: storageError
+        } =
+            await supabaseClient
+                .storage
+                .from("photos")
+                .remove([
+                    photo.storage_path
+                ]);
+
+
+        if (storageError) {
+
+            throw storageError;
+
+        }
+
+
+        /* Suppression de l'enregistrement */
+
+        const {
+            error: databaseError
+        } =
+            await supabaseClient
+                .from("photos")
+                .delete()
+                .eq(
+                    "id",
+                    photo.id
+                );
+
+
+        if (databaseError) {
+
+            throw databaseError;
+
+        }
+
+
+        await loadPhotos();
+
+
+        alert(
+            "Photo supprimée avec succès."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Erreur suppression :",
+            error
+        );
+
+
+        alert(
+            "Impossible de supprimer cette photo."
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   VISIONNEUSE
+   ============================================================ */
+
+function openViewer(index) {
+
+    if (
+        !displayedPhotos.length
+    ) {
+        return;
+    }
+
+
+    currentViewerIndex =
+        index;
+
+
+    updateViewer();
+
+
+    viewerModal.classList.remove(
+        "hidden"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+function updateViewer() {
+
+    const photo =
+        displayedPhotos[
+            currentViewerIndex
+        ];
+
+
+    if (!photo) {
+        return;
+    }
+
+
+    const url =
+        getPhotoUrl(
+            photo.storage_path
+        );
+
+
+    viewerImage.src =
+        url;
+
+    viewerImage.alt =
+        photo.file_name;
+
+
+    viewerTitle.textContent =
+        photo.file_name;
+
+
+    viewerAlbum.textContent =
+        photo.album;
+
+
+    downloadPhoto.href =
+        url;
+
+
+    downloadPhoto.download =
+        photo.file_name;
+
+}
+
+
+/* ============================================================
+   PHOTO PRÉCÉDENTE
+   ============================================================ */
+
+function showPreviousPhoto() {
+
+    if (
+        displayedPhotos.length === 0
+    ) {
+        return;
+    }
+
+
+    currentViewerIndex--;
+
+    if (
+        currentViewerIndex < 0
+    ) {
+
+        currentViewerIndex =
+            displayedPhotos.length - 1;
+
+    }
+
+
+    updateViewer();
+
+}
+
+
+/* ============================================================
+   PHOTO SUIVANTE
+   ============================================================ */
+
+function showNextPhoto() {
+
+    if (
+        displayedPhotos.length === 0
+    ) {
+        return;
+    }
+
+
+    currentViewerIndex++;
+
+    if (
+        currentViewerIndex >=
+        displayedPhotos.length
+    ) {
+
+        currentViewerIndex = 0;
+
+    }
+
+
+    updateViewer();
+
+}
+
+
+/* ============================================================
+   FERMER VISIONNEUSE
+   ============================================================ */
+
+function closeViewerModal() {
+
+    viewerModal.classList.add(
+        "hidden"
+    );
+
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+/* ============================================================
+   CLAVIER
+   ============================================================ */
+
+function handleKeyboard(event) {
+
+    if (
+        viewerModal.classList.contains(
+            "hidden"
+        )
+    ) {
+        return;
+    }
+
+
+    if (
+        event.key === "Escape"
+    ) {
+
+        closeViewerModal();
+
+    }
+
+
+    if (
+        event.key === "ArrowLeft"
+    ) {
+
+        showPreviousPhoto();
+
+    }
+
+
+    if (
+        event.key === "ArrowRight"
+    ) {
+
+        showNextPhoto();
+
+    }
+
+}
+
+
+/* ============================================================
+   MESSAGE DE STATUT
+   ============================================================ */
+
+function showStatus(
+    element,
+    message,
+    type
+) {
+
+    element.textContent =
+        message;
+
+    element.className =
+        `status show ${type}`;
+
+}
+
+
+/* ============================================================
+   TAILLE FICHIER
+   ============================================================ */
+
+function formatFileSize(
+    bytes
+) {
+
+    if (bytes === 0) {
+        return "0 octet";
+    }
+
+
+    const units = [
+        "octets",
+        "Ko",
+        "Mo",
+        "Go"
+    ];
+
+
+    const index =
+        Math.floor(
+            Math.log(bytes) /
+            Math.log(1024)
+        );
+
+
+    return (
+        parseFloat(
+            (
+                bytes /
+                Math.pow(
+                    1024,
+                    index
+                )
+            ).toFixed(1)
+        ) +
+        " " +
+        units[index]
+    );
+
+}
+
+
+/* ============================================================
+   NETTOYAGE DU NOM DE FICHIER
+   ============================================================ */
+
+function sanitizeFileName(
+    fileName
+) {
+
+    const extension =
+        getExtension(
+            fileName
+        );
+
+
+    const baseName =
+        fileName
+            .replace(
+                /\.[^/.]+$/,
+                ""
+            )
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .replace(
+                /[^a-zA-Z0-9-_]/g,
+                "-"
+            )
+            .replace(
+                /-+/g,
+                "-"
+            )
+            .replace(
+                /^-|-$/g,
+                ""
+            )
+            .toLowerCase();
+
+
+    const finalName =
+        baseName ||
+        "photo";
+
+
+    return (
+        finalName +
+        (
+            extension
+                ? "." + extension
+                : ""
+        )
+    );
+
+}
+
+
+/* ============================================================
+   EXTENSION
+   ============================================================ */
+
+function getExtension(
+    fileName
+) {
+
+    const parts =
+        fileName.split(".");
+
+
+    if (
+        parts.length < 2
+    ) {
+
+        return "";
+
+    }
+
+
+    return parts
+        .pop()
+        .toLowerCase();
+
+}

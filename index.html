@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Médiathèque Wilfrid HOUNGUE</title>
+
+    <meta name="description"
+          content="Médiathèque personnelle de Wilfrid HOUNGUE">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+
+        <div class="logo">
+            <span class="logo-icon">W</span>
+            <div>
+                <strong>Médiathèque</strong>
+                <small>Wilfrid HOUNGUE</small>
+            </div>
+        </div>
+
+        <nav class="navigation">
+            <a href="#accueil">Accueil</a>
+            <a href="#galerie">Galerie</a>
+            <a href="#albums">Albums</a>
+            <a href="#ajouter">Ajouter</a>
+        </nav>
+
+        <button class="admin-button" id="adminButton">
+            🔐 Administration
+        </button>
+
+    </header>
+
+
+    <!-- ================= HERO ================= -->
+
+    <main>
+
+        <section class="hero" id="accueil">
+
+            <div class="hero-content">
+
+                <span class="badge">
+                    MÉDIATHÈQUE PERSONNELLE
+                </span>
+
+                <h1>
+                    Mes souvenirs,<br>
+                    mes travaux,<br>
+                    <span>mon histoire.</span>
+                </h1>
+
+                <p>
+                    Un espace personnel pour conserver, organiser
+                    et partager mes photos, mes travaux de recherche
+                    et mes moments importants.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="#galerie" class="primary-button">
+                        Voir la galerie →
+                    </a>
+
+                    <a href="#ajouter" class="secondary-button">
+                        + Ajouter une photo
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="hero-decoration">
+
+                <div class="photo-card card-one">
+                    <div class="placeholder-image">📷</div>
+                </div>
+
+                <div class="photo-card card-two">
+                    <div class="placeholder-image">🐄</div>
+                </div>
+
+                <div class="photo-card card-three">
+                    <div class="placeholder-image">🌾</div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= STATISTIQUES ================= -->
+
+        <section class="statistics">
+
+            <div class="stat-card">
+                <span class="stat-icon">🖼️</span>
+                <div>
+                    <strong id="photoCount">0</strong>
+                    <span>Photos</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">📁</span>
+                <div>
+                    <strong>4</strong>
+                    <span>Albums</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">🎓</span>
+                <div>
+                    <strong>2026</strong>
+                    <span>Depuis</span>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= ALBUMS ================= -->
+
+        <section class="section" id="albums">
+
+            <div class="section-heading">
+
+                <div>
+                    <span class="section-label">ORGANISATION</span>
+                    <h2>Mes albums</h2>
+                </div>
+
+            </div>
+
+
+            <div class="albums-grid">
+
+                <div class="album-card research">
+                    <div class="album-icon">🔬</div>
+                    <div>
+                        <h3>Travaux de recherche</h3>
+                        <p>Expérimentations et recherches scientifiques</p>
+                    </div>
+                    <span class="album-arrow">→</span>
+                </div>
+
+
+                <div class="album-card field">
+                    <div class="album-icon">🌍</div>
+                    <div>
+                        <h3>Terrain</h3>
+                        <p>Activités et missions de terrain</p>
+                    </div>
+                    <span class="album-arrow">→</span>
+                </div>
+
+
+                <div class="album-card thesis">
+                    <div class="album-icon">🎓</div>
+                    <div>
+                        <h3>Thèse</h3>
+                        <p>Travaux liés à mon parcours académique</p>
+                    </div>
+                    <span class="album-arrow">→</span>
+                </div>
+
+
+                <div class="album-card personal">
+                    <div class="album-icon">📸</div>
+                    <div>
+                        <h3>Photos personnelles</h3>
+                        <p>Souvenirs et moments importants</p>
+                    </div>
+                    <span class="album-arrow">→</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= GALERIE ================= -->
+
+        <section class="section gallery-section" id="galerie">
+
+            <div class="section-heading">
+
+                <div>
+                    <span class="section-label">COLLECTION</span>
+                    <h2>Galerie récente</h2>
+                </div>
+
+                <div class="gallery-tools">
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Rechercher..."
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="gallery" id="gallery">
+
+                <div class="empty-gallery" id="emptyGallery">
+
+                    <div class="empty-icon">📷</div>
+
+                    <h3>Aucune photo pour le moment</h3>
+
+                    <p>
+                        Ajoutez votre première photo pour commencer
+                        votre médiathèque.
+                    </p>
+
+                    <a href="#ajouter" class="primary-button">
+                        Ajouter une photo
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= AJOUT PHOTO ================= -->
+
+        <section class="upload-section" id="ajouter">
+
+            <div class="upload-container">
+
+                <div class="upload-text">
+
+                    <span class="section-label">VOTRE COLLECTION</span>
+
+                    <h2>
+                        Ajoutez vos<br>
+                        souvenirs.
+                    </h2>
+
+                    <p>
+                        Sélectionnez une ou plusieurs photos depuis
+                        votre ordinateur pour les ajouter à votre
+                        médiathèque.
+                    </p>
+
+                </div>
+
+
+                <div class="upload-box" id="uploadBox">
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                    <h3>
+                        Ajouter des photos
+                    </h3>
+
+                    <p>
+                        Cliquez ici ou déposez vos fichiers
+                    </p>
+
+                    <label for="photoInput" class="upload-button">
+                        Choisir des photos
+                    </label>
+
+                    <input
+                        type="file"
+                        id="photoInput"
+                        accept="image/*"
+                        multiple
+                        hidden
+                    >
+
+                    <small>
+                        JPG, PNG, WEBP • Plusieurs fichiers acceptés
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="footer">
+
+        <div class="footer-logo">
+            <span class="logo-icon">W</span>
+            <strong>Médiathèque Wilfrid HOUNGUE</strong>
+        </div>
+
+        <p>
+            Une collection personnelle de souvenirs,
+            de recherches et de moments importants.
+        </p>
+
+        <div class="footer-bottom">
+            <span>© 2026 Wilfrid HOUNGUE</span>
+            <span>Médiathèque personnelle</span>
+        </div>
+
+    </footer>
+
+
+    <!-- ================= MODAL ADMIN ================= -->
+
+    <div class="modal hidden" id="adminModal">
+
+        <div class="modal-content">
+
+            <button class="close-modal" id="closeModal">
+                ×
+            </button>
+
+            <div class="modal-icon">
+                🔐
+            </div>
+
+            <h2>Administration</h2>
+
+            <p>
+                Cette partie sera sécurisée dans la prochaine version.
+            </p>
+
+            <div class="admin-info">
+                <strong>Administrateur</strong>
+                <span>Wilfrid HOUNGUE</span>
+            </div>
+
+            <button class="primary-button modal-button" id="adminDemo">
+                Continuer
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>

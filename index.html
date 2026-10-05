@@ -1,102 +1,107 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Médiathèque Wilfrid HOUNGUE</title>
 
-    <meta name="description"
-          content="Médiathèque personnelle de Wilfrid HOUNGUE">
-
     <link rel="stylesheet" href="style.css">
 </head>
 
-    <!-- Fenêtre photo en grand -->
-<div id="photoModal" class="photo-modal">
-    <span class="photo-modal-close" onclick="closePhoto()">×</span>
-
-    <img id="modalImage" src="" alt="Photo en grand">
-</div>
-    
 <body>
 
     <!-- ================= HEADER ================= -->
 
     <header class="header">
 
-        <div class="logo">
-            <span class="logo-icon">W</span>
-            <div>
-                <strong>Médiathèque</strong>
-                <small>Wilfrid HOUNGUE</small>
+        <div class="container header-content">
+
+            <div class="logo">
+                <div class="logo-letter">W</div>
+
+                <div>
+                    <div class="logo-title">Médiathèque</div>
+                    <div class="logo-name">Wilfrid HOUNGUE</div>
+                </div>
             </div>
+
+            <nav class="navigation">
+
+                <a href="#accueil">Accueil</a>
+
+                <a href="#galerie">Galerie</a>
+
+                <a href="#albums">Albums</a>
+
+                <a href="#ajouter">Ajouter</a>
+
+                <button id="adminButton" class="admin-button">
+                    🔐 Administration
+                </button>
+
+            </nav>
+
         </div>
-
-        <nav class="navigation">
-            <a href="#accueil">Accueil</a>
-            <a href="#galerie">Galerie</a>
-            <a href="#albums">Albums</a>
-            <a href="#ajouter">Ajouter</a>
-        </nav>
-
-        <button class="admin-button" id="adminButton">
-            🔐 Administration
-        </button>
 
     </header>
 
 
-    <!-- ================= HERO ================= -->
+    <!-- ================= ACCUEIL ================= -->
 
     <main>
 
-        <section class="hero" id="accueil">
+        <section id="accueil" class="hero">
 
-            <div class="hero-content">
+            <div class="container hero-content">
 
-                <span class="badge">
-                    MÉDIATHÈQUE PERSONNELLE
-                </span>
+                <div class="hero-text">
 
-                <h1>
-                    Mes souvenirs,<br>
-                    mes travaux,<br>
-                    <span>mon histoire.</span>
-                </h1>
+                    <span class="badge">
+                        MÉDIATHÈQUE PERSONNELLE
+                    </span>
 
-                <p>
-                    Un espace personnel pour conserver, organiser
-                    et partager mes photos, mes travaux de recherche
-                    et mes moments importants.
-                </p>
+                    <h1>
+                        Mes souvenirs,<br>
+                        mes travaux,<br>
+                        mon histoire.
+                    </h1>
 
-                <div class="hero-buttons">
+                    <p>
+                        Une collection personnelle de photographies,
+                        de travaux de recherche et de moments importants.
+                    </p>
 
-                    <a href="#galerie" class="primary-button">
-                        Voir la galerie →
-                    </a>
+                    <div class="hero-buttons">
 
-                    <a href="#ajouter" class="secondary-button">
-                        + Ajouter une photo
-                    </a>
+                        <a href="#galerie" class="button primary-button">
+                            Voir la galerie
+                        </a>
+
+                        <a href="#ajouter" class="button secondary-button">
+                            Ajouter des photos
+                        </a>
+
+                    </div>
 
                 </div>
 
-            </div>
 
-            <div class="hero-decoration">
+                <div class="hero-visual">
 
-                <div class="photo-card card-one">
-                    <div class="placeholder-image">📷</div>
-                </div>
+                    <div class="visual-card card-one">
+                        📷
+                    </div>
 
-                <div class="photo-card card-two">
-                    <div class="placeholder-image">🐄</div>
-                </div>
+                    <div class="visual-card card-two">
+                        🐄
+                    </div>
 
-                <div class="photo-card card-three">
-                    <div class="placeholder-image">🌾</div>
+                    <div class="visual-card card-three">
+                        🌾
+                    </div>
+
                 </div>
 
             </div>
@@ -106,30 +111,25 @@
 
         <!-- ================= STATISTIQUES ================= -->
 
-        <section class="statistics">
+        <section class="stats-section">
 
-            <div class="stat-card">
-                <span class="stat-icon">🖼️</span>
-                <div>
+            <div class="container stats">
+
+                <div class="stat">
                     <strong id="photoCount">0</strong>
                     <span>Photos</span>
                 </div>
-            </div>
 
-            <div class="stat-card">
-                <span class="stat-icon">📁</span>
-                <div>
+                <div class="stat">
                     <strong>4</strong>
                     <span>Albums</span>
                 </div>
-            </div>
 
-            <div class="stat-card">
-                <span class="stat-icon">🎓</span>
-                <div>
+                <div class="stat">
                     <strong>2026</strong>
                     <span>Depuis</span>
                 </div>
+
             </div>
 
         </section>
@@ -137,57 +137,102 @@
 
         <!-- ================= ALBUMS ================= -->
 
-        <section class="section" id="albums">
+        <section id="albums" class="section">
 
-            <div class="section-heading">
+            <div class="container">
 
-                <div>
-                    <span class="section-label">ORGANISATION</span>
-                    <h2>Mes albums</h2>
-                </div>
+                <div class="section-header">
 
-            </div>
-
-
-            <div class="albums-grid">
-
-                <div class="album-card research">
-                    <div class="album-icon">🔬</div>
                     <div>
-                        <h3>Travaux de recherche</h3>
-                        <p>Expérimentations et recherches scientifiques</p>
-                    </div>
-                    <span class="album-arrow">→</span>
-                </div>
+                        <span class="section-label">
+                            ORGANISATION
+                        </span>
 
-
-                <div class="album-card field">
-                    <div class="album-icon">🌍</div>
-                    <div>
-                        <h3>Terrain</h3>
-                        <p>Activités et missions de terrain</p>
+                        <h2>Mes albums</h2>
                     </div>
-                    <span class="album-arrow">→</span>
+
+                    <button
+                        id="showAllButton"
+                        class="view-all-button">
+                        Toutes les photos
+                    </button>
+
                 </div>
 
 
-                <div class="album-card thesis">
-                    <div class="album-icon">🎓</div>
-                    <div>
-                        <h3>Thèse</h3>
-                        <p>Travaux liés à mon parcours académique</p>
-                    </div>
-                    <span class="album-arrow">→</span>
-                </div>
+                <div class="albums-grid">
+
+                    <button
+                        class="album-card"
+                        data-album="Travaux de recherche">
+
+                        <div class="album-icon">
+                            🔬
+                        </div>
+
+                        <div>
+                            <h3>Travaux de recherche</h3>
+                            <span class="album-count" data-count-album="Travaux de recherche">
+                                0 photo
+                            </span>
+                        </div>
+
+                    </button>
 
 
-                <div class="album-card personal">
-                    <div class="album-icon">📸</div>
-                    <div>
-                        <h3>Photos personnelles</h3>
-                        <p>Souvenirs et moments importants</p>
-                    </div>
-                    <span class="album-arrow">→</span>
+                    <button
+                        class="album-card"
+                        data-album="Terrain">
+
+                        <div class="album-icon">
+                            🌾
+                        </div>
+
+                        <div>
+                            <h3>Terrain</h3>
+                            <span class="album-count" data-count-album="Terrain">
+                                0 photo
+                            </span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        class="album-card"
+                        data-album="Thèse">
+
+                        <div class="album-icon">
+                            📚
+                        </div>
+
+                        <div>
+                            <h3>Thèse</h3>
+                            <span class="album-count" data-count-album="Thèse">
+                                0 photo
+                            </span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        class="album-card"
+                        data-album="Photos personnelles">
+
+                        <div class="album-icon">
+                            👤
+                        </div>
+
+                        <div>
+                            <h3>Photos personnelles</h3>
+                            <span class="album-count" data-count-album="Photos personnelles">
+                                0 photo
+                            </span>
+                        </div>
+
+                    </button>
+
                 </div>
 
             </div>
@@ -197,44 +242,54 @@
 
         <!-- ================= GALERIE ================= -->
 
-        <section class="section gallery-section" id="galerie">
+        <section id="galerie" class="section gallery-section">
 
-            <div class="section-heading">
+            <div class="container">
 
-                <div>
-                    <span class="section-label">COLLECTION</span>
-                    <h2>Galerie récente</h2>
+                <div class="section-header gallery-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            GALERIE
+                        </span>
+
+                        <h2 id="galleryTitle">
+                            Toutes les photos
+                        </h2>
+
+                    </div>
+
+
+                    <div class="search-box">
+
+                        <span>🔎</span>
+
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Rechercher une photo..."
+                        >
+
+                    </div>
+
                 </div>
 
-                <div class="gallery-tools">
 
-                    <input
-                        type="search"
-                        id="searchInput"
-                        placeholder="Rechercher..."
-                    >
-
-                </div>
-
-            </div>
+                <div id="gallery" class="gallery-grid"></div>
 
 
-            <div class="gallery" id="gallery">
+                <div id="emptyGallery" class="empty-gallery">
 
-                <div class="empty-gallery" id="emptyGallery">
+                    <div class="empty-icon">
+                        📷
+                    </div>
 
-                    <div class="empty-icon">📷</div>
-
-                    <h3>Aucune photo pour le moment</h3>
+                    <h3>Aucune photo</h3>
 
                     <p>
-                        Ajoutez votre première photo pour commencer
-                        votre médiathèque.
+                        Cet album ne contient pas encore de photo.
                     </p>
-
-                    <a href="#ajouter" class="primary-button">
-                        Ajouter une photo
-                    </a>
 
                 </div>
 
@@ -243,59 +298,88 @@
         </section>
 
 
-        <!-- ================= AJOUT PHOTO ================= -->
+        <!-- ================= AJOUTER ================= -->
 
-        <section class="upload-section" id="ajouter">
+        <section id="ajouter" class="section upload-section">
 
-            <div class="upload-container">
+            <div class="container">
 
-                <div class="upload-text">
-
-                    <span class="section-label">VOTRE COLLECTION</span>
-
-                    <h2>
-                        Ajoutez vos<br>
-                        souvenirs.
-                    </h2>
-
-                    <p>
-                        Sélectionnez une ou plusieurs photos depuis
-                        votre ordinateur pour les ajouter à votre
-                        médiathèque.
-                    </p>
-
-                </div>
-
-
-                <div class="upload-box" id="uploadBox">
+                <div class="upload-card">
 
                     <div class="upload-icon">
-                        ↑
+                        ⬆️
                     </div>
 
-                    <h3>
-                        Ajouter des photos
-                    </h3>
+                    <h2>Ajouter des photos</h2>
 
                     <p>
-                        Cliquez ici ou déposez vos fichiers
+                        Sélectionnez les photos à ajouter à votre médiathèque.
                     </p>
 
-                    <label for="photoInput" class="upload-button">
-                        Choisir des photos
-                    </label>
 
-                    <input
-                        type="file"
-                        id="photoInput"
-                        accept="image/*"
-                        multiple
-                        hidden
-                    >
+                    <!-- CHOIX DE L'ALBUM -->
 
-                    <small>
-                        JPG, PNG, WEBP • Plusieurs fichiers acceptés
-                    </small>
+                    <div class="album-selector">
+
+                        <label for="albumSelect">
+                            Choisir l'album
+                        </label>
+
+                        <select id="albumSelect">
+
+                            <option value="Travaux de recherche">
+                                Travaux de recherche
+                            </option>
+
+                            <option value="Terrain">
+                                Terrain
+                            </option>
+
+                            <option value="Thèse">
+                                Thèse
+                            </option>
+
+                            <option value="Photos personnelles">
+                                Photos personnelles
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div id="uploadBox" class="upload-box">
+
+                        <div class="upload-box-icon">
+                            📸
+                        </div>
+
+                        <h3>
+                            Déposez vos photos ici
+                        </h3>
+
+                        <p>
+                            ou cliquez pour sélectionner vos fichiers
+                        </p>
+
+                        <button
+                            type="button"
+                            class="button primary-button"
+                            id="choosePhotoButton">
+
+                            Choisir des photos
+
+                        </button>
+
+                        <input
+                            type="file"
+                            id="photoInput"
+                            accept="image/*"
+                            multiple
+                            hidden
+                        >
+
+                    </div>
 
                 </div>
 
@@ -310,19 +394,22 @@
 
     <footer class="footer">
 
-        <div class="footer-logo">
-            <span class="logo-icon">W</span>
-            <strong>Médiathèque Wilfrid HOUNGUE</strong>
-        </div>
+        <div class="container footer-content">
 
-        <p>
-            Une collection personnelle de souvenirs,
-            de recherches et de moments importants.
-        </p>
+            <div>
+                <strong>
+                    Médiathèque Wilfrid HOUNGUE
+                </strong>
 
-        <div class="footer-bottom">
-            <span>© 2026 Wilfrid HOUNGUE</span>
-            <span>Médiathèque personnelle</span>
+                <p>
+                    Photographies • Recherche • Élevage • Agriculture
+                </p>
+            </div>
+
+            <div>
+                © 2026 Wilfrid HOUNGUE
+            </div>
+
         </div>
 
     </footer>
@@ -330,31 +417,28 @@
 
     <!-- ================= MODAL ADMIN ================= -->
 
-    <div class="modal hidden" id="adminModal">
+    <div id="adminModal" class="admin-modal">
 
-        <div class="modal-content">
+        <div class="admin-modal-content">
 
-            <button class="close-modal" id="closeModal">
+            <button
+                id="closeModal"
+                class="modal-close">
                 ×
             </button>
-
-            <div class="modal-icon">
-                🔐
-            </div>
 
             <h2>Administration</h2>
 
             <p>
-                Cette partie sera sécurisée dans la prochaine version.
+                Activez le mode administrateur pour gérer les photos.
             </p>
 
-            <div class="admin-info">
-                <strong>Administrateur</strong>
-                <span>Wilfrid HOUNGUE</span>
-            </div>
+            <button
+                id="adminDemo"
+                class="button primary-button">
 
-            <button class="primary-button modal-button" id="adminDemo">
-                Continuer
+                🔓 Activer le mode administrateur
+
             </button>
 
         </div>
@@ -362,7 +446,67 @@
     </div>
 
 
+    <!-- ================= VISIONNEUSE ================= -->
+
+    <div id="photoModal" class="photo-modal">
+
+        <button
+            class="viewer-close"
+            onclick="closePhoto()">
+            ×
+        </button>
+
+
+        <button
+            class="viewer-prev"
+            onclick="previousPhoto()">
+            ❮
+        </button>
+
+
+        <div class="viewer-content">
+
+            <img
+                id="modalImage"
+                src=""
+                alt="Photo en plein écran"
+            >
+
+
+            <div class="viewer-bottom">
+
+                <span id="photoPosition">
+                    1 / 1
+                </span>
+
+                <a
+                    id="modalDownload"
+                    class="viewer-download"
+                    href="#"
+                    download>
+
+                    ⬇ Télécharger
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="viewer-next"
+            onclick="nextPhoto()">
+
+            ❯
+
+        </button>
+
+    </div>
+
+
     <script src="script.js"></script>
 
 </body>
+
 </html>

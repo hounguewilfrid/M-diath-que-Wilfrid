@@ -188,3 +188,17 @@ if (searchInput) {
 }
 
 loadPhotos();
+
+function openPhoto(image) {
+    const modal = document.getElementById("photoModal");
+    const modalImage = document.getElementById("modalImage");
+
+    modalImage.src = image;
+    modal.style.display = "flex";
+}
+
+function closePhoto() {
+    const modal = document.getElementById("photoModal");
+
+    modal.style.display = "none";
+}
